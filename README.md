@@ -12,6 +12,11 @@ git clone https://github.com/foderking/WhoProduced_Backend.git
 
 cd WhoProduced_Backend
 ```
+Create a .env file in repository with your spotify developer credentials
+```
+CLIENT_ID = 'XXXXXXXXXXXX'
+CLIENT_SECRET = 'XXXXXXXXXXXX'
+```
 
 ### Prerequisites
 
