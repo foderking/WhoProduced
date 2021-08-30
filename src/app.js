@@ -1,7 +1,5 @@
 require('dotenv').config()
 var token
-// var client_id = '0b915b1dc5364b3293451d5f0d0e96d3'
-// var client_secret = '3940b98a1e9f44f5bc6e4d394664bd06'
 
 const client_id = process.env.CLIENT_ID
 const client_secret = process.env.CLIENT_SECRET
