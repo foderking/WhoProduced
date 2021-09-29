@@ -19,14 +19,22 @@ SearchRouter.post('/', async function(req, res) {
     var ans  = await search(body) 
     
     if (ans.tracks.items.length == 0 ) {
-      console.log('empty spotify object')
+      console.log('EMPTY_SPOTIFY_RESPONSE')
       return res.json({"Error": "No Result From Spotify Api", "name": "EMPTY_SPOTIFY_RESPONSE"})
     }
 
     res.send(ans)
   }
   catch (error) {
-    console.log('error searching', error.response.data)
+    if (error === "REQUEST_KEY_ERROR") {
+      console.error("Error:: REQUEST_KEY_ERROR")
+      return res.json({"Error": "Request body does not contain valid keys.", "name": "REQUEST_KEY_ERROR"})
+    }
+    else if (error === "EMPTY_QUERY" ) {
+      console.error("Error:: EMPTY_QUERY")
+      return res.json({"Error": "You Have To Add A Valid Search Term", "name": "EMPTY_QUERY"})
+    }
+    console.log('Error:::', error.response.data)
     res.status(400).json(error.response.data)
   }
 })
