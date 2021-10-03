@@ -34,7 +34,7 @@ SearchRouter.post('/', async function(req, res) {
       console.error("Error:: EMPTY_QUERY")
       return res.json({"Error": "You Have To Add A Valid Search Term", "name": "EMPTY_QUERY"})
     }
-    console.log('Error:::', error.response.data)
+    console.log('Error:::>', error.response.data)
     res.status(400).json(error.response.data)
   }
 })

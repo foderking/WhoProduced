@@ -1,76 +1,57 @@
-var axios = require('axios');
-
-var token, expiry_time;
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
-var SearchParams = require('url').URLSearchParams;;
+const axios = require('axios');
+const SearchParams = require('url').URLSearchParams;;
+const { ClientCredentials } = require('simple-oauth2')
 const LOG = require('../utils/logger')
 
-const axios_options = {
-  method: 'POST',
-  url: 'https://accounts.spotify.com/api/token',
-  headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  data: 'grant_type=client_credentials',
+const auth_config = {
+  client: {
+    id: client_id,
+    secret:  client_secret,
+  },
   auth: {
-    username: client_id,
-    password: client_secret,
+    tokenHost: 'https://accounts.spotify.com',
+          tokenPath: '/api/token'
   }
-};
-
-const TokenHeader = (token) => ({ 'Authorization': 'Bearer ' + token });
-
-async function GetToken() {
-  LOG('getting valid token');
-  if (!CheckIfTokenValid(token)) {
-    const new_token = await RenewToken();
-
-    token = new_token.token;
-    expiry_time = new_token.expiry_time;
-  }
-  console.log('token::', token);
-  console.log('token expiry time::', expiry_time);
-
-  LOG('got valid token');
-  return token;
 }
 
-async function RenewToken() {
+const client = new ClientCredentials(auth_config); // we are using client credentials authorisation
+
+let access_token = null;
+
+// converts access token to the authorization header => { 'authorization': 'Bearer jsglksgkjlflsdkfssfkffs'}
+const TokenHeader = (access_token) => ({ 'Authorization': `${access_token.token.token_type} ${access_token.token.access_token}` });
+
+async function NewToken()
+{ // Return valid access token. called when token is expired or on first request
   try {
-    LOG('renewing token');
-    const response = await axios.request(axios_options);
+    LOG('getting New token');
+    const access_token = await client.getToken();
+    LOG('done..');
 
-    const token = response.data.access_token; // set token
-    const expires_in = response.data.expires_in;
-    const expiry_time = GetCurrentTime() + expires_in; // set expiry time
-
-    LOG('renewed token');
-    return ({ token, expiry_time });
+    return access_token
   }
-  catch (e) {
-    console.error("error renewing token:::", e.response.data);
+  catch (error) {
+    console.log("Error getting new token::>", error.output);
   }
 }
 
-function CheckIfTokenValid(token) {
-  if (!token || CheckIfExpired(token)) {
-    // return false if token expired, null, undefined
-    return false;
+async function NewGetToken()
+{ // should return valid token
+  // everything being used is the access token which is an object containing the actual token and other things
+  LOG('getting valid token');
+
+  if ( !access_token || access_token.expired()) { // if the access token is null - on first request or when the token has expired. this methods eliminates the need for me to check that manually..
+    access_token = await NewToken()
   }
-  return true;
+  
+  console.log('token::>', access_token.token.access_token);
+  console.log('token expiry time::>', access_token.token.expires_at);
+
+  return access_token
 }
 
-function CheckIfExpired(token) {
-  // returns true if token is expired, false otherwise
-  const current_time = GetCurrentTime();
-  return expiry_time < current_time;
-}
-
-function GetCurrentTime() {
-  const time_milli = new Date().getTime();
-  const time_seconds = time_milli / 1000;
-
-  return time_seconds;
-}
 
 function GetRelevantKeys(body)
 {
@@ -106,7 +87,6 @@ async function search(body)
   * 
   */ 
   LOG('quering spotify');
-  console.log('current time::', GetCurrentTime());
 
   const params = GetRelevantKeys(body)
 
@@ -117,10 +97,10 @@ async function search(body)
 
   var url = 'https://api.spotify.com/v1/search?' + req_query;
 
-  const token = await GetToken();
+  const access_token = await NewGetToken(); // returns access token as opposed to the actuall token ; access token contains the actual token and other useful shit
   
   var options = {
-    headers: TokenHeader(token),
+    headers: TokenHeader(access_token),
     json: true
   };
 
