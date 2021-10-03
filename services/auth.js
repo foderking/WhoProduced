@@ -14,10 +14,9 @@ const auth_config = {
 		tokenPath: '/api/token'
 	}
 }
-
+let access_token = null;
 const client = new ClientCredentials(auth_config); // we are using client credentials authorisation
 
-let access_token = null;
 
 // converts access token to the authorization header => { 'authorization': 'Bearer jsglksgkjlflsdkfssfkffs'}
 const TokenHeader = (access_token) => ({ 'Authorization': `${access_token.token.token_type} ${access_token.token.access_token}` });
@@ -32,7 +31,9 @@ async function NewToken()
 		return access_token
 	}
 	catch (error) {
-		console.log("Error getting new token::>", error.output);
+		console.log("NEW_TOKEN_ERR: Error getting new token::>", error.output);
+		throw "NEW_TOKEN_ERR"
+		// throw new Exception()
 	}
 }
 
@@ -43,6 +44,8 @@ async function NewGetToken()
 
 	if ( !access_token || access_token.expired()) { // if the access token is null - on first request or when the token has expired. this methods eliminates the need for me to check that manually..
 		access_token = await NewToken()
+
+		if (!access_token) throw "TOKEN_ERR"
 	}
 	
 	console.log('token::>', access_token.token.access_token);
