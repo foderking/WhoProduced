@@ -26,6 +26,13 @@ function Errors (error, req, res, next) {
 				Error: true
 			})
 			break;
+		case "NEW_TOKEN_ERR":
+			res.json({
+				name: error, 
+				message: "Error authenticating with spotify",
+				Error: true
+			})
+			break;
 		case "EMPTY_QUERY":
 			res.json({
 				name: error, 
