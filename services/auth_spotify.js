@@ -1,13 +1,19 @@
-const client_id = process.env.CLIENT_ID;
-const client_secret = process.env.CLIENT_SECRET;
+require('dotenv').config() // This needs to be called first in order for gettoken to work
 const { ClientCredentials } = require('simple-oauth2')
 const LOG = require('../utils/logger')
 
+const spotify_client_id = process.env.SPOTIFY_CLIENT_ID;
+const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+
+
+if (!spotify_client_id || !spotify_client_secret) {
+	throw "CLIENT_CREDENTIAL_ERR"
+}
 
 const auth_config = {
 	client: {
-		id: client_id,
-		secret:  client_secret,
+		id: spotify_client_id,
+		secret:  spotify_client_secret,
 	},
 	auth: {
 		tokenHost: 'https://accounts.spotify.com',
@@ -31,13 +37,13 @@ async function NewToken()
 		return access_token
 	}
 	catch (error) {
-		console.log("NEW_TOKEN_ERR: Error getting new token::>", error.output);
+		console.log("Error::>", error.output);
 		throw "NEW_TOKEN_ERR"
 		// throw new Exception()
 	}
 }
 
-async function NewGetToken()
+async function GetToken()
 { // should return valid token
 	// everything being used is the access token which is an object containing the actual token and other things
 	LOG('getting valid token');
@@ -56,7 +62,7 @@ async function NewGetToken()
 
 async function GetTokenHeader()
 {
-  const acc_token = await NewGetToken(); // returns access token as opposed to the actuall token ; access token contains the actual token and other useful shit
+  const acc_token = await GetToken(); // returns access token as opposed to the actuall token ; access token contains the actual token and other useful shit
 	const token_header = TokenHeader(acc_token)
 	return token_header
 }

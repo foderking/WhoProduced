@@ -5,7 +5,8 @@
   "version": "0.0.2",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test" : "jest"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -16,6 +17,7 @@
     "simple-oauth2": "^4.2.0"
   },
   "devDependencies": {
+    "jest": "^27.2.5",
     "nodemon": "^2.0.13"
   }
 }

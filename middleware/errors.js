@@ -7,7 +7,9 @@
 // res.status(400).json(err)
 
 function Errors (error, req, res, next) {
-	console.log('Error::>', error.error)
+	if (error === "CLIENT_CREDENTIAL_ERR") {
+		console.log('Client Id or Secret missing in authentication function')
+	}
 
 	if (error.error) {
 		res.json({

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const LOG = require('../utils/logger')
-const { GetTokenHeader } = require('./auth')
+const { GetTokenHeader } = require('./auth_spotify')
 
 
 function GetId(body)

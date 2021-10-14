@@ -1,7 +1,7 @@
 const axios = require('axios');
 const UrlEncode = require('url').URLSearchParams;
 const LOG = require('../utils/logger')
-const { GetTokenHeader } = require('./auth')
+const { GetTokenHeader } = require('./auth_spotify')
 
 
 function GetRelevantKeys(body)

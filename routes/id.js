@@ -1,5 +1,5 @@
 const LOG = require('../utils/logger')
-const { GetTrack } = require('../services/track')
+const { GetTrack } = require('../services/get_track_spotify')
 
 const IdRouter = require('express').Router()
 
