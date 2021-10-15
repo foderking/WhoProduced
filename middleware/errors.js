@@ -3,8 +3,10 @@ function Errors (error, req, res, next)
 {
 	if (error.name && error.message ) {
 		res.json({
-			name: error.name,
-			message: error.message
+			error: {
+				name: error.name,
+				message: error.message
+			}
 		})
 		return next()
 	}

@@ -7,6 +7,28 @@ const Search = require('express').Router()
 
 Search.post('/', async function (req, res, next)
 {
+  LOG('REQUEST TO /api/search')
+
+  const body = req.body
+  console.log('req body::>', body)
+
+  try {
+    var ans = await search_spotify(body)
+
+    if (ans.tracks.items.length == 0) {
+      throw new EmptyResultError()
+    }
+
+    return res.send(ans)
+  }
+  catch (error) {
+    next(error)
+  }
+
+})
+
+Search.get('/', async function (req, res, next)
+{
   const { path, q } = req.query // Uses query parameters as opposed to body. path specifies whether genius or spotify, q specifies query
   console.log('req query::>', req.query)
 
@@ -16,7 +38,7 @@ Search.post('/', async function (req, res, next)
 
     try {
       const resp = await search_genius(q)
-      console.log('response::>',resp)
+      console.log('response::>', resp)
 
       if (!resp.response.hits.length) {
         throw new EmptyResultError()
@@ -28,24 +50,6 @@ Search.post('/', async function (req, res, next)
       console.log('object')
       next(error)
     }
-  }
-  else {
-    const body = req.body
-    console.log('req body::>', body)
-
-    try {
-      var ans = await search_spotify(body)
-
-      if (ans.tracks.items.length == 0) {
-        throw new EmptyResultError()
-      }
-
-      return res.send(ans)
-    }
-    catch (error) {
-      next(error)
-    }
-
   }
 })
 
