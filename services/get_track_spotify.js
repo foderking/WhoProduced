@@ -1,23 +1,22 @@
 const axios = require('axios');
 const LOG = require('../utils/logger')
-const { GetTokenHeader } = require('./auth_spotify')
+const { GetTokenHeader } = require('./auth_spotify');
+const { SpotifyRequestError, RequestKeyError } = require('./custom_errors');
 
 
 function GetId(body)
 {// Parses body and extracts track id
-  const bod_id  = String(body.id)
+  const body_id  = String(body.id)
 
-  if (!bod_id) {
-    throw "EMPTY_QUERY"
+  if (!body_id) {
+    throw new RequestKeyError()
   }
-	return bod_id
+	return body_id
 }
 
 async function GetTrack(body)
 {/*
   * Sends request to spotify to get track specified by id
-  * 
-  * 
   */ 
     LOG('getting track from spotify');
 
@@ -43,11 +42,15 @@ async function GetTrack(body)
   }
   catch (error) {
     LOG('error quering spotify');
-
-    if (error.response.data) {
-      throw error.response.data
-    }
-    throw "SPOTIFY_ERROR"
+    console.log("Error::>", error.response.data)
+    // error.response.data => {
+    //   meta: {
+    //     status: 401,
+    //     message: 'This call requires an access_token. Please see: https://genius.com/developers'
+    //   }
+    // }
+    // throw "SPOTIFY_ERROR"
+    throw new SpotifyRequestError()
   }
 }
 

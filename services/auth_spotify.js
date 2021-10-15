@@ -1,13 +1,14 @@
 require('dotenv').config() // This needs to be called first in order for gettoken to work
 const { ClientCredentials } = require('simple-oauth2')
-const LOG = require('../utils/logger')
+const LOG = require('../utils/logger');
+const { CredentialError, TokenError } = require('./custom_errors');
 
 const spotify_client_id = process.env.SPOTIFY_CLIENT_ID;
 const spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
 
 if (!spotify_client_id || !spotify_client_secret) {
-	throw "CLIENT_CREDENTIAL_ERR"
+	throw new CredentialError()
 }
 
 const auth_config = {
@@ -38,8 +39,7 @@ async function NewToken()
 	}
 	catch (error) {
 		console.log("Error::>", error.output);
-		throw "NEW_TOKEN_ERR"
-		// throw new Exception()
+		throw new TokenError()
 	}
 }
 
@@ -51,7 +51,7 @@ async function GetToken()
 	if ( !access_token || access_token.expired()) { // if the access token is null - on first request or when the token has expired. this methods eliminates the need for me to check that manually..
 		access_token = await NewToken()
 
-		if (!access_token) throw "TOKEN_ERR"
+		if (!access_token) throw new TokenError()
 	}
 	
 	console.log('token::>', access_token.token.access_token);

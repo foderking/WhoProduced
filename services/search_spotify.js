@@ -2,6 +2,7 @@ const axios = require('axios');
 const UrlEncode = require('url').URLSearchParams;
 const LOG = require('../utils/logger')
 const { GetTokenHeader } = require('./auth_spotify')
+const { EmptyQueryError, RequestKeyError, SpotifyRequestError } = require('./custom_errors')
 
 
 function GetRelevantKeys(body)
@@ -16,14 +17,14 @@ function GetRelevantKeys(body)
   const bod_offset = body.offset   ? body.offset :  0
 
   if (!bod_query) {
-    throw "EMPTY_QUERY"
+    throw new EmptyQueryError()
   }
   else if (
     typeof bod_query !== 'string'|| 
     typeof bod_type  !== 'string'|| 
     typeof bod_limit !== 'number'||
     typeof bod_offset!== 'number') {
-      throw "REQUEST_KEY_ERROR"
+      throw new RequestKeyError()
     }       
             
   return ({
@@ -71,11 +72,15 @@ async function search(body)
   }
   catch (error) {
     LOG('error quering spotify');
-
-    if (error.response.data) {
-      throw error.response.data
-    }
-    throw "SPOTIFY_ERROR"
+    console.log("Error::>", error.response.data)
+    // error.response.data => {
+    //   meta: {
+    //     status: 401,
+    //     message: 'This call requires an access_token. Please see: https://genius.com/developers'
+    //   }
+    // }
+    // throw "SPOTIFY_ERROR"
+    throw new SpotifyRequestError()
   }
 }
 
