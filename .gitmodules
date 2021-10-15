@@ -1,0 +1,3 @@
+[submodule "WhoProduced_frontend"]
+	path = WhoProduced_frontend
+	url = git@github.com:foderking/WhoProduced_frontend.git

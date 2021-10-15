@@ -1,17 +1,25 @@
-const client_id = process.env.CLIENT_ID;
-const client_secret = process.env.CLIENT_SECRET;
-const { ClientCredentials } = require('simple-oauth2')
-const LOG = require('../utils/logger')
+require('dotenv').config() // This needs to be called first in order for gettoken to work
 
+const { ClientCredentials } = require('simple-oauth2')
+const LOG = require('../utils/logger');
+const { CredentialError, TokenError } = require('./custom_errors');
+
+const genius_client_id = process.env.GENIUS_CLIENT_ID;
+const genius_client_secret = process.env.GENIUS_CLIENT_SECRET;
+
+
+if (!genius_client_secret || !genius_client_id) {
+	throw new CredentialError()
+}
 
 const auth_config = {
 	client: {
-		id: client_id,
-		secret:  client_secret,
+		id: genius_client_id,
+		secret:  genius_client_secret,
 	},
 	auth: {
-		tokenHost: 'https://accounts.spotify.com',
-		tokenPath: '/api/token'
+		tokenHost: 'https://api.genius.com',
+		tokenPath: 'oauth/token'
 	}
 }
 let access_token = null;
@@ -31,13 +39,12 @@ async function NewToken()
 		return access_token
 	}
 	catch (error) {
-		console.log("NEW_TOKEN_ERR: Error getting new token::>", error.output);
-		throw "NEW_TOKEN_ERR"
-		// throw new Exception()
+		console.log("Error::>", error.output);
+		throw new TokenError()
 	}
 }
 
-async function NewGetToken()
+async function GetToken()
 { // should return valid token
 	// everything being used is the access token which is an object containing the actual token and other things
 	LOG('getting valid token');
@@ -45,18 +52,17 @@ async function NewGetToken()
 	if ( !access_token || access_token.expired()) { // if the access token is null - on first request or when the token has expired. this methods eliminates the need for me to check that manually..
 		access_token = await NewToken()
 
-		if (!access_token) throw "TOKEN_ERR"
+		if (!access_token) throw new TokenError()
 	}
 	
 	console.log('token::>', access_token.token.access_token);
-	console.log('token expiry time::>', access_token.token.expires_at);
 
 	return access_token
 }
 
 async function GetTokenHeader()
 {
-  const acc_token = await NewGetToken(); // returns access token as opposed to the actuall token ; access token contains the actual token and other useful shit
+  const acc_token = await GetToken(); // returns access token as opposed to the actuall token ; access token contains the actual token and other useful shit
 	const token_header = TokenHeader(acc_token)
 	return token_header
 }

@@ -28,7 +28,7 @@ CLIENT_SECRET = 'XXXXXXXXXXXX'
 Install Yarn
 
 ```sh
-npm install yarn
+npm install -g yarn
 ```
 
 Install dependencies
