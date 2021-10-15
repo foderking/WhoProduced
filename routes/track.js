@@ -7,6 +7,22 @@ const Track = require('express').Router()
 Track.post('/', async function (req, res, next)
 {
   LOG('REQUEST TO /id')
+  const body = req.body
+  console.log('req body', body)
+
+  try {
+    var ans = await GetTrackSpotify(body)
+    res.send(ans)
+  }
+  catch (error) {
+    next(error)
+  }
+
+})
+
+Track.get('/', async function (req, res, next)
+{
+  LOG('REQUEST TO /id')
   const { id } = req.query
 
   if (id) {
@@ -19,19 +35,6 @@ Track.post('/', async function (req, res, next)
     catch (error) {
       next(error)
     }
-  }
-  else {
-    const body = req.body
-    console.log('req body', body)
-
-    try {
-      var ans = await GetTrackSpotify(body)
-      res.send(ans)
-    }
-    catch (error) {
-      next(error)
-    }
-
   }
 })
 
