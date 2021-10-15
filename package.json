@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "cd WhoProduced_frontend && yarn && yarn build",
-    "deploy":"yarn && yarn build && yarn start",
+    "build": "yarn && cd WhoProduced_frontend && yarn && yarn build",
+    "deploy":"yarn build && yarn start",
     "test": "jest"
   },
   "dependencies": {
