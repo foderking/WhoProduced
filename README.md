@@ -4,7 +4,10 @@ Uses the Genius api to retrieve producer credits.
 Uses the spotify api to fetch information abount songs, artistes, and albums.
 This project uses Client Credentials flow to access the spotify web api.
 
+*Front Page*
 ![front-page](/examples/whoproduced-frontpage.jpg)
+
+*Credit Page*
 ![credit-page](/examples/whoproduced-credit-page.jpg)
 
 ## Installation
