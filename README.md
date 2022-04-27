@@ -1,4 +1,4 @@
-# WhoProduced Backend
+# WhoProduced
 
 Uses the Genius api to retrieve producer credits.
 Uses the spotify api to fetch information abount songs, artistes, and albums.
